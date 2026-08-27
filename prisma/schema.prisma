@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Game {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  minPlayers  Int
+  maxPlayers  Int
+  minAge      Int
+  playtime    Int // in minutes
+  image       String   @default("https://images.unsplash.com/photo-1610890716171-6b1bb98ffaed?q=80&w=2000&auto=format&fit=crop")
+  category    String
+  price       Float    // Rental price
+  stock       Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  rentals     Rental[]
+}
+
+model Rental {
+  id              String   @id @default(cuid())
+  gameId          String
+  clientName      String
+  clientPhone     String
+  startDate       DateTime @default(now())
+  expectedEndDate DateTime
+  returnDate      DateTime?
+  status          String   @default("ACTIVE") // ACTIVE, RETURNED, LATE
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  game            Game     @relation(fields: [gameId], references: [id])
+}
